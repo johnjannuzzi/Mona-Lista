@@ -13,6 +13,7 @@ export default function AddItemModal({ item, onClose, onAdd }) {
   const [notes, setNotes] = useState(item?.notes || '')
   const [isTopChoice, setIsTopChoice] = useState(item?.is_top_choice || false)
   const [scraping, setScraping] = useState(false)
+  const [scrapeWarning, setScrapeWarning] = useState(false)
   const [saving, setSaving] = useState(false)
 
   const isEditing = !!item
@@ -21,11 +22,14 @@ export default function AddItemModal({ item, onClose, onAdd }) {
     if (!url.trim()) return
 
     setScraping(true)
+    setScrapeWarning(false)
     
     // Create a timeout promise
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error('Scrape timeout')), 5000)
     )
+    
+    let gotData = false
     
     try {
       const fetchPromise = fetch(`${API_URL}/api/scrape`, {
@@ -37,12 +41,27 @@ export default function AddItemModal({ item, onClose, onAdd }) {
       
       const data = await Promise.race([fetchPromise, timeoutPromise])
       
-      if (data.title) setTitle(data.title)
-      if (data.price) setPrice(data.price)
+      if (data.title) {
+        setTitle(data.title)
+        gotData = true
+      }
+      if (data.price) {
+        setPrice(data.price)
+        gotData = true
+      }
       if (data.domain) setDomain(data.domain)
-      if (data.image_url) setImageUrl(data.image_url)
+      if (data.image_url) {
+        setImageUrl(data.image_url)
+        gotData = true
+      }
+      
+      // Show warning if we didn't get much useful data
+      if (!gotData) {
+        setScrapeWarning(true)
+      }
     } catch (err) {
       console.error('Scrape error:', err)
+      setScrapeWarning(true)
       // Still set the domain even if scrape fails
       try {
         const urlObj = new URL(url.trim())
@@ -105,6 +124,11 @@ export default function AddItemModal({ item, onClose, onAdd }) {
                   {scraping ? <Loader size={16} className="spin" /> : 'Fetch'}
                 </button>
               </div>
+              {scrapeWarning && (
+                <p className="scrape-warning">
+                  We couldn't grab all the details. Please fill in the missing info below!
+                </p>
+              )}
             </div>
 
             {/* Title */}
