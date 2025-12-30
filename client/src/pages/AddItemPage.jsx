@@ -22,6 +22,7 @@ export default function AddItemPage() {
   const [imageUrl, setImageUrl] = useState('')
   const [notes, setNotes] = useState('')
   const [showImageHelp, setShowImageHelp] = useState(false)
+  const [scrapeWarning, setScrapeWarning] = useState(false)
   
   const url = searchParams.get('url') || ''
   const domain = url ? new URL(url).hostname.replace('www.', '') : ''
@@ -67,6 +68,7 @@ export default function AddItemPage() {
 
   const scrapeUrl = async () => {
     setScraping(true)
+    setScrapeWarning(false)
     
     // Create a timeout promise
     const timeoutPromise = new Promise((_, reject) => 
@@ -84,12 +86,18 @@ export default function AddItemPage() {
       // Race between fetch and timeout
       const data = await Promise.race([fetchPromise, timeoutPromise])
       
-      if (data.title) setTitle(data.title)
+      // Only overwrite if we got better data
+      if (data.title && data.title.trim()) setTitle(data.title)
       if (data.price) setPrice(data.price)
       if (data.image_url) setImageUrl(data.image_url)
+      
+      // Show warning if we didn't get an image (title we likely have from page)
+      if (!data.image_url) {
+        setScrapeWarning(true)
+      }
     } catch (err) {
       console.error('Scrape error:', err)
-      // Keep the title from the page if scrape fails
+      setScrapeWarning(true)
     } finally {
       setScraping(false)
     }
@@ -184,10 +192,12 @@ export default function AddItemPage() {
       </div>
 
       <div className="add-page-content">
-        {/* Warning message */}
-        <p className="scrape-warning">
-          We try to auto-fill details, but some sites don't share their data. You can edit anything below!
-        </p>
+        {/* Warning message - only show when scrape fails */}
+        {scrapeWarning && (
+          <p className="scrape-warning">
+            We couldn't grab all the details. Please fill in the missing info below!
+          </p>
+        )}
 
         {/* Preview */}
         <div className="item-preview">
