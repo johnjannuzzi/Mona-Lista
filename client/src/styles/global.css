@@ -1,0 +1,329 @@
+/* Mona Lista — Global Styles (Light & Warm) */
+
+:root {
+  /* Warm Light Palette */
+  --ml-cream: #FDF8F3;
+  --ml-parchment: #F5EDE4;
+  --ml-warm-white: #FFFBF7;
+  
+  /* Rich Accent Colors */
+  --ml-umber: #3D2E1F;
+  --ml-sfumato: #6B5744;
+  --ml-ochre: #B8860B;
+  --ml-amber: #D4A012;
+  
+  /* Burgundy Accents */
+  --ml-wine: #4A1C2A;
+  --ml-renaissance: #722F37;
+  --ml-claret: #8B3A42;
+  --ml-rosso: #A64D52;
+  
+  /* Soft Accents */
+  --ml-sage: #7A8B6E;
+  --ml-haze: #9AABB8;
+  
+  /* Semantic Colors */
+  --color-bg: var(--ml-cream);
+  --color-bg-elevated: var(--ml-warm-white);
+  --color-bg-card: var(--ml-warm-white);
+  --color-text: var(--ml-umber);
+  --color-text-muted: var(--ml-sfumato);
+  --color-text-accent: var(--ml-renaissance);
+  --color-primary: var(--ml-renaissance);
+  --color-primary-hover: var(--ml-claret);
+  --color-border: rgba(107, 87, 68, 0.15);
+  --color-border-strong: rgba(107, 87, 68, 0.3);
+  
+  /* Typography */
+  --font-display: 'Benditos', 'Playfair Display', Georgia, serif;
+  --font-body: 'Birdie', 'Crimson Text', Georgia, serif;
+  
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  
+  /* Borders */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(61, 46, 31, 0.08);
+  --shadow-md: 0 4px 16px rgba(61, 46, 31, 0.1);
+  --shadow-lg: 0 8px 32px rgba(61, 46, 31, 0.12);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Subtle texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(212, 160, 18, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(114, 47, 55, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: normal;
+  line-height: 1.2;
+  color: var(--ml-umber);
+}
+
+a {
+  color: var(--ml-renaissance);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--ml-claret);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea {
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Utility Classes */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.text-center { text-align: center; }
+.text-muted { color: var(--color-text-muted); }
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: normal;
+  transition: all var(--transition-base);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--ml-warm-white);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  color: var(--ml-warm-white);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ml-umber);
+  border: 1px solid var(--color-border-strong);
+}
+
+.btn-secondary:hover {
+  border-color: var(--ml-renaissance);
+  color: var(--ml-renaissance);
+  background: rgba(114, 47, 55, 0.05);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ml-sfumato);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.btn-ghost:hover {
+  background: rgba(107, 87, 68, 0.08);
+  color: var(--ml-umber);
+}
+
+.btn-small {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+}
+
+.btn-icon {
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-size: 0.875rem;
+  color: var(--ml-sfumato);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--ml-warm-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--ml-umber);
+  font-size: 1rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--ml-renaissance);
+  box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--ml-sfumato);
+  opacity: 0.6;
+}
+
+/* Card Styles */
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-slow) ease forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp var(--transition-slow) ease forwards;
+}
+
+/* Stagger delays for lists */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ml-parchment);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ml-sfumato);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ml-umber);
+}
+
+/* Selection */
+::selection {
+  background: var(--ml-renaissance);
+  color: var(--ml-warm-white);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--ml-renaissance);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

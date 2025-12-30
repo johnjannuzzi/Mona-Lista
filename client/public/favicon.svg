@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="frame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C9A227"/>
+      <stop offset="50%" style="stop-color:#8B6914"/>
+      <stop offset="100%" style="stop-color:#C9A227"/>
+    </linearGradient>
+  </defs>
+  <!-- Ornate frame -->
+  <rect x="5" y="5" width="90" height="90" rx="4" fill="none" stroke="url(#frame)" stroke-width="6"/>
+  <rect x="12" y="12" width="76" height="76" rx="2" fill="#2C2416"/>
+  <!-- Stylized L for Lista -->
+  <path d="M 35 28 L 35 62 L 60 62" fill="none" stroke="#E8DCC4" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Heart accent -->
+  <path d="M 58 35 C 58 30, 65 30, 65 35 C 65 30, 72 30, 72 35 C 72 42, 65 48, 65 48 C 65 48, 58 42, 58 35" fill="#722F37"/>
+</svg>

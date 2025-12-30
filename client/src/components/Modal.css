@@ -1,0 +1,195 @@
+/* Modal Styles — Light & Warm */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(61, 46, 31, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  z-index: 1000;
+  animation: fadeIn var(--transition-fast) ease;
+}
+
+.modal {
+  background: var(--ml-warm-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp var(--transition-base) ease;
+  box-shadow: var(--shadow-lg);
+}
+
+@media (min-width: 768px) {
+  .modal {
+    max-width: 640px;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  color: var(--ml-umber);
+}
+
+.modal form,
+.modal-body {
+  padding: var(--space-xl);
+}
+
+.modal textarea.form-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+}
+
+/* Bookmarklet Modal */
+.bookmarklet-content {
+  padding: var(--space-xl);
+}
+
+.bookmarklet-content p {
+  color: var(--ml-sfumato);
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+}
+
+.bookmarklet-button {
+  display: block;
+  width: 100%;
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, var(--ml-renaissance), var(--ml-wine));
+  color: var(--ml-warm-white);
+  text-align: center;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  text-decoration: none;
+  cursor: grab;
+  transition: all var(--transition-base);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.bookmarklet-button:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.bookmarklet-instructions {
+  background: var(--ml-parchment);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.bookmarklet-instructions h4 {
+  font-size: 0.9rem;
+  color: var(--ml-renaissance);
+  margin-bottom: var(--space-md);
+}
+
+.bookmarklet-instructions ol {
+  list-style: decimal;
+  padding-left: var(--space-lg);
+  color: var(--ml-sfumato);
+  font-size: 0.9rem;
+}
+
+.bookmarklet-instructions li {
+  margin-bottom: var(--space-sm);
+}
+
+/* AddItemModal specific styles */
+.url-input-row {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.url-input-wrapper {
+  flex: 1;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.image-preview {
+  margin-top: var(--space-sm);
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--ml-parchment);
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-hint {
+  margin-top: var(--space-xs);
+  font-size: 0.8rem;
+  color: var(--ml-sfumato);
+  font-style: italic;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  color: var(--ml-sfumato);
+}
+
+.toggle-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ml-renaissance);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Unclaim button styling */
+.unclaim-btn {
+  color: var(--ml-sfumato);
+  font-size: 0.85rem;
+}
+
+.unclaim-btn:hover {
+  color: var(--ml-rosso);
+}

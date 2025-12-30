@@ -1,0 +1,218 @@
+/* AddItemPage Styles — Bookmarklet Popup */
+
+.add-page {
+  min-height: 100vh;
+  background: var(--ml-cream);
+  display: flex;
+  flex-direction: column;
+}
+
+.add-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--ml-warm-white);
+}
+
+.add-page-header h1 {
+  font-size: 1.1rem;
+  color: var(--ml-renaissance);
+}
+
+.add-page-content {
+  flex: 1;
+  padding: var(--space-md) var(--space-lg);
+  overflow-y: auto;
+}
+
+.add-page-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  background: var(--ml-warm-white);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Loading / Error / Success States */
+.add-page-loading,
+.add-page-error,
+.add-page-success {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.add-page-loading p,
+.add-page-error p,
+.add-page-success p {
+  color: var(--ml-sfumato);
+  margin-top: var(--space-md);
+}
+
+.add-page-error h2,
+.add-page-success h2 {
+  margin-bottom: var(--space-sm);
+}
+
+.add-page-error .btn {
+  margin-top: var(--space-lg);
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ml-renaissance), var(--ml-wine));
+  color: var(--ml-warm-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+}
+
+/* Item Preview */
+.item-preview {
+  background: var(--ml-warm-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  margin-bottom: var(--space-md);
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.preview-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--ml-parchment);
+}
+
+.preview-placeholder {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  background: var(--ml-parchment);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ml-sfumato);
+}
+
+.preview-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.preview-domain {
+  font-size: 0.8rem;
+  color: var(--ml-sfumato);
+}
+
+.preview-price {
+  font-size: 1rem;
+  color: var(--ml-renaissance);
+  font-weight: 500;
+}
+
+/* Form */
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.add-form .form-group {
+  margin-bottom: 0;
+}
+
+.add-form .form-label {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+.add-form .form-input {
+  font-size: 0.95rem;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.add-form select.form-input {
+  cursor: pointer;
+}
+
+.no-lists {
+  color: var(--ml-sfumato);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Scrape warning */
+.scrape-warning {
+  font-size: 0.8rem;
+  color: var(--ml-sfumato);
+  font-style: italic;
+  text-align: center;
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm);
+  background: var(--ml-parchment);
+  border-radius: var(--radius-sm);
+}
+
+/* Image help */
+.help-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: var(--space-xs);
+  font-size: 0.75rem;
+  color: var(--ml-renaissance);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.help-toggle:hover {
+  color: var(--ml-wine);
+}
+
+.image-help {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--ml-parchment);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--ml-sfumato);
+}
+
+.image-help ol {
+  margin: 0;
+  padding-left: var(--space-lg);
+}
+
+.image-help li {
+  margin-bottom: var(--space-xs);
+}
+
+.image-help li:last-child {
+  margin-bottom: 0;
+}
+
+/* Spin animation */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

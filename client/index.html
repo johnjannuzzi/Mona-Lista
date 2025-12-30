@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mona Lista — The Best Wishlists You Can Make</title>
+    <meta name="description" content="Create and share beautiful wishlists with friends and family" />
+    
+    <!-- Fonts -->
+    <style>
+      @font-face {
+        font-family: 'Benditos';
+        src: url('/fonts/TAYBenditos.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+      
+      @font-face {
+        font-family: 'Birdie';
+        src: url('/fonts/TAYBirdieRegular.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+    
+    <!-- ShopMy Affiliate Script -->
+    <script defer src="https://static.shopmy.us/Auto/iu0wK1.js" data-sms="iu0wK1"></script>
+    <script>
+      // ShopMy refresh function for dynamically added content
+      window.refreshShopMyLinks = function() {
+        const scriptTag = document.querySelector("script[data-sms]");
+        const userId = scriptTag?.getAttribute("data-sms");
+        if (!userId) return;
+        
+        // Find all shop links that haven't been processed yet
+        document.querySelectorAll('a[href]:not([data-shopmy-processed])').forEach(link => {
+          const href = link.getAttribute('href');
+          
+          // Skip if already a ShopMy link, empty, or hash
+          if (!href || href === '#' || href.includes('shopmy.us') || href.includes('go.shopmy.us')) {
+            return;
+          }
+          
+          // Skip internal links and javascript bookmarklets
+          if (href.startsWith('/') || href.startsWith('#') || href.startsWith('javascript:')) {
+            return;
+          }
+          
+          // Skip non-product links (social, etc)
+          if (href.includes('facebook.com') || href.includes('twitter.com') || 
+              href.includes('instagram.com') || href.includes('mailto:')) {
+            return;
+          }
+          
+          // Convert to ShopMy affiliate link
+          try {
+            const encodedUrl = encodeURIComponent(href);
+            link.setAttribute('data-original-url', href);
+            link.setAttribute('data-shopmy-processed', 'true');
+            link.href = `https://go.shopmy.us/apx/${userId}?url=${encodedUrl}`;
+          } catch (e) {
+            console.error('ShopMy link conversion error:', e);
+          }
+        });
+      };
+      
+      // Also expose a function to convert a single URL
+      window.getShopMyLink = function(url) {
+        const scriptTag = document.querySelector("script[data-sms]");
+        const userId = scriptTag?.getAttribute("data-sms");
+        if (!userId || !url) return url;
+        
+        // Skip if already a ShopMy link
+        if (url.includes('shopmy.us') || url.includes('go.shopmy.us')) {
+          return url;
+        }
+        
+        try {
+          const encodedUrl = encodeURIComponent(url);
+          return `https://go.shopmy.us/apx/${userId}?url=${encodedUrl}`;
+        } catch (e) {
+          return url;
+        }
+      };
+      
+      // Run on initial load and observe for changes
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initial scan
+        setTimeout(window.refreshShopMyLinks, 500);
+        
+        // Watch for DOM changes (React updates)
+        const observer = new MutationObserver(function(mutations) {
+          let hasNewLinks = false;
+          mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+              mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1 && (node.tagName === 'A' || node.querySelector?.('a'))) {
+                  hasNewLinks = true;
+                }
+              });
+            }
+          });
+          if (hasNewLinks) {
+            setTimeout(window.refreshShopMyLinks, 100);
+          }
+        });
+        
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
