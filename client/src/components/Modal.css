@@ -154,6 +154,15 @@
   font-style: italic;
 }
 
+.scrape-warning {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  background: rgba(114, 47, 55, 0.1);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--ml-renaissance);
+}
+
 .toggle-row {
   display: flex;
   align-items: center;
