@@ -13,7 +13,8 @@ async function tryScraperAPI(url) {
     console.log('Trying ScraperAPI fallback for:', url);
     
     // ScraperAPI fetches the page for us using residential proxies
-    const scraperUrl = `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(url)}&render=true`;
+    // premium=true uses ultra-premium proxies for heavily protected sites (costs 25 credits)
+    const scraperUrl = `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(url)}&render=true&premium=true&country_code=us`;
     
     const response = await axios.get(scraperUrl, {
       timeout: 60000 // ScraperAPI can be slow, give it 60s
