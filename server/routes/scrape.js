@@ -4,6 +4,50 @@ const cheerio = require('cheerio');
 
 const router = express.Router();
 
+// LinkPreview.net API key (fallback scraper for protected sites)
+const LINKPREVIEW_API_KEY = process.env.LINKPREVIEW_API_KEY || '54df7b737f0a0ec51616e5917ff26a8c';
+
+// Fallback to LinkPreview.net when direct scraping fails
+async function tryLinkPreview(url) {
+  try {
+    console.log('Trying LinkPreview.net fallback for:', url);
+    
+    const response = await axios.post('https://api.linkpreview.net', 
+      new URLSearchParams({ q: url }).toString(),
+      {
+        headers: {
+          'X-Linkpreview-Api-Key': LINKPREVIEW_API_KEY,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        timeout: 10000
+      }
+    );
+    
+    if (response.data && response.data.title) {
+      const urlObj = new URL(url);
+      const domain = urlObj.hostname.replace('www.', '');
+      
+      console.log('LinkPreview success:', response.data.title?.substring(0, 50));
+      
+      // LinkPreview doesn't return price, so we return null for it
+      return {
+        title: (response.data.title || '').substring(0, 255),
+        price: null, // LinkPreview doesn't extract prices
+        domain,
+        image_url: response.data.image || '',
+        original_url: url,
+        description: (response.data.description || '').substring(0, 500),
+        source: 'linkpreview' // Track that this came from fallback
+      };
+    }
+    
+    return null;
+  } catch (err) {
+    console.error('LinkPreview fallback failed:', err.message);
+    return null;
+  }
+}
+
 // Scrape URL for product info
 router.post('/', async (req, res) => {
   const { url } = req.body;
@@ -51,7 +95,12 @@ router.post('/', async (req, res) => {
       }
     }
 
+    // If direct fetch failed, try LinkPreview.net as fallback
     if (!response || response.status !== 200) {
+      const linkPreviewData = await tryLinkPreview(url);
+      if (linkPreviewData) {
+        return res.json(linkPreviewData);
+      }
       throw new Error('Failed to fetch page');
     }
 
