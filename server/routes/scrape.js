@@ -23,6 +23,9 @@ async function tryLinkPreview(url) {
       }
     );
     
+    console.log('LinkPreview response status:', response.status);
+    console.log('LinkPreview response data:', JSON.stringify(response.data));
+    
     if (response.data && response.data.title) {
       const urlObj = new URL(url);
       const domain = urlObj.hostname.replace('www.', '');
@@ -41,9 +44,13 @@ async function tryLinkPreview(url) {
       };
     }
     
+    console.log('LinkPreview returned no title, data was:', response.data);
     return null;
   } catch (err) {
     console.error('LinkPreview fallback failed:', err.message);
+    if (err.response) {
+      console.error('LinkPreview error response:', err.response.status, err.response.data);
+    }
     return null;
   }
 }
