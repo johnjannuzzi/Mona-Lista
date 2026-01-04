@@ -4,27 +4,39 @@ const cheerio = require('cheerio');
 
 const router = express.Router();
 
-// ScraperAPI key (fallback scraper for protected sites)
-const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY || '2b821d3d2044d5278526abda78eff92d';
+// Browserless API for headless Chrome scraping (free tier: 1000 units)
+const BROWSERLESS_API_KEY = process.env.BROWSERLESS_API_KEY;
 
-// Fallback to ScraperAPI when direct scraping fails
-async function tryScraperAPI(url) {
+// Fallback to Browserless when direct scraping fails
+async function tryBrowserless(url) {
+  if (!BROWSERLESS_API_KEY) {
+    console.log('Browserless API key not configured');
+    return null;
+  }
+  
   try {
-    console.log('Trying ScraperAPI fallback for:', url);
+    console.log('Trying Browserless /unblock fallback for:', url);
     
-    // ScraperAPI fetches the page for us using residential proxies
-    // premium=true uses ultra-premium proxies for heavily protected sites (costs 25 credits)
-    const scraperUrl = `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(url)}&render=true&premium=true&country_code=us`;
+    // Use /unblock API with residential proxy for heavily protected sites
+    const response = await axios.post(
+      `https://production-sfo.browserless.io/unblock?token=${BROWSERLESS_API_KEY}&proxy=residential`,
+      {
+        url: url,
+        content: true,  // Return HTML content
+        browserWSEndpoint: false,
+        cookies: false
+      },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 60000
+      }
+    );
     
-    const response = await axios.get(scraperUrl, {
-      timeout: 60000 // ScraperAPI can be slow, give it 60s
-    });
+    console.log('Browserless response status:', response.status);
     
-    console.log('ScraperAPI response status:', response.status);
-    
-    if (response.status === 200 && response.data) {
-      // Parse the HTML just like we do for direct scraping
-      const $ = cheerio.load(response.data);
+    if (response.status === 200 && response.data && response.data.content) {
+      // Parse the HTML
+      const $ = cheerio.load(response.data.content);
       const urlObj = new URL(url);
       const domain = urlObj.hostname.replace('www.', '');
       
@@ -108,7 +120,7 @@ async function tryScraperAPI(url) {
         }
       }
       
-      console.log('ScraperAPI success:', title?.substring(0, 50));
+      console.log('Browserless success:', title?.substring(0, 50));
       
       if (title) {
         return {
@@ -118,17 +130,17 @@ async function tryScraperAPI(url) {
           image_url: imageUrl,
           original_url: url,
           description: ($('meta[property="og:description"]').attr('content') || '').substring(0, 500),
-          source: 'scraperapi'
+          source: 'browserless'
         };
       }
     }
     
-    console.log('ScraperAPI returned no usable data');
+    console.log('Browserless returned no usable data');
     return null;
   } catch (err) {
-    console.error('ScraperAPI fallback failed:', err.message);
+    console.error('Browserless fallback failed:', err.message);
     if (err.response) {
-      console.error('ScraperAPI error response:', err.response.status);
+      console.error('Browserless error response:', err.response.status, err.response.data);
     }
     return null;
   }
@@ -181,11 +193,11 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // If direct fetch failed, try ScraperAPI as fallback
+    // If direct fetch failed, try Browserless as fallback
     if (!response || response.status !== 200) {
-      const scraperData = await tryScraperAPI(url);
-      if (scraperData) {
-        return res.json(scraperData);
+      const browserlessData = await tryBrowserless(url);
+      if (browserlessData) {
+        return res.json(browserlessData);
       }
       throw new Error('Failed to fetch page');
     }
