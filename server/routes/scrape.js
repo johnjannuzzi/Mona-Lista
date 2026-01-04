@@ -4,52 +4,130 @@ const cheerio = require('cheerio');
 
 const router = express.Router();
 
-// LinkPreview.net API key (fallback scraper for protected sites)
-const LINKPREVIEW_API_KEY = process.env.LINKPREVIEW_API_KEY || '54df7b737f0a0ec51616e5917ff26a8c';
+// ScraperAPI key (fallback scraper for protected sites)
+const SCRAPER_API_KEY = process.env.SCRAPER_API_KEY || '2b821d3d2044d5278526abda78eff92d';
 
-// Fallback to LinkPreview.net when direct scraping fails
-async function tryLinkPreview(url) {
+// Fallback to ScraperAPI when direct scraping fails
+async function tryScraperAPI(url) {
   try {
-    console.log('Trying LinkPreview.net fallback for:', url);
+    console.log('Trying ScraperAPI fallback for:', url);
     
-    const response = await axios.post('https://api.linkpreview.net', 
-      new URLSearchParams({ q: url }).toString(),
-      {
-        headers: {
-          'X-Linkpreview-Api-Key': LINKPREVIEW_API_KEY,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        timeout: 10000
-      }
-    );
+    // ScraperAPI fetches the page for us using residential proxies
+    const scraperUrl = `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(url)}&render=true`;
     
-    console.log('LinkPreview response status:', response.status);
-    console.log('LinkPreview response data:', JSON.stringify(response.data));
+    const response = await axios.get(scraperUrl, {
+      timeout: 60000 // ScraperAPI can be slow, give it 60s
+    });
     
-    if (response.data && response.data.title) {
+    console.log('ScraperAPI response status:', response.status);
+    
+    if (response.status === 200 && response.data) {
+      // Parse the HTML just like we do for direct scraping
+      const $ = cheerio.load(response.data);
       const urlObj = new URL(url);
       const domain = urlObj.hostname.replace('www.', '');
       
-      console.log('LinkPreview success:', response.data.title?.substring(0, 50));
+      // Extract title
+      let title = '';
+      const jsonLdScripts = $('script[type="application/ld+json"]').toArray();
+      for (const script of jsonLdScripts) {
+        try {
+          let data = JSON.parse($(script).html());
+          if (data['@graph']) {
+            data = data['@graph'].find(item => item['@type'] === 'Product') || data;
+          }
+          if (data['@type'] === 'Product' && data.name) {
+            title = data.name;
+            break;
+          }
+        } catch (e) {}
+      }
       
-      // LinkPreview doesn't return price, so we return null for it
-      return {
-        title: (response.data.title || '').substring(0, 255),
-        price: null, // LinkPreview doesn't extract prices
-        domain,
-        image_url: response.data.image || '',
-        original_url: url,
-        description: (response.data.description || '').substring(0, 500),
-        source: 'linkpreview' // Track that this came from fallback
-      };
+      if (!title) {
+        title = $('meta[property="og:title"]').attr('content') ||
+                $('meta[name="twitter:title"]').attr('content') ||
+                $('title').text().trim() || '';
+      }
+      
+      // Clean up title
+      title = title.split('|')[0].split(' - ')[0].replace(/\s+/g, ' ').trim();
+      
+      // Extract price
+      let price = null;
+      for (const script of jsonLdScripts) {
+        try {
+          let data = JSON.parse($(script).html());
+          if (data['@graph']) {
+            data = data['@graph'].find(item => item['@type'] === 'Product') || data;
+          }
+          if (data['@type'] === 'Product' && data.offers) {
+            const offers = Array.isArray(data.offers) ? data.offers[0] : data.offers;
+            const priceValue = offers.price || offers.lowPrice;
+            if (priceValue) {
+              price = parseFloat(priceValue);
+              break;
+            }
+          }
+        } catch (e) {}
+      }
+      
+      if (!price) {
+        const priceMeta = $('meta[property="product:price:amount"]').attr('content') ||
+                          $('meta[property="og:price:amount"]').attr('content');
+        if (priceMeta) price = parseFloat(priceMeta.replace(/[^0-9.]/g, ''));
+      }
+      
+      // Extract image
+      let imageUrl = '';
+      for (const script of jsonLdScripts) {
+        try {
+          let data = JSON.parse($(script).html());
+          if (data['@graph']) {
+            data = data['@graph'].find(item => item['@type'] === 'Product') || data;
+          }
+          if (data['@type'] === 'Product' && data.image) {
+            imageUrl = Array.isArray(data.image) ? data.image[0] : data.image;
+            if (typeof imageUrl === 'object') imageUrl = imageUrl.url || '';
+            break;
+          }
+        } catch (e) {}
+      }
+      
+      if (!imageUrl) {
+        imageUrl = $('meta[property="og:image"]').attr('content') ||
+                   $('meta[name="twitter:image"]').attr('content') || '';
+      }
+      
+      // Make image URL absolute
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        try {
+          imageUrl = new URL(imageUrl, url).href;
+        } catch (e) {
+          imageUrl = '';
+        }
+      }
+      
+      console.log('ScraperAPI success:', title?.substring(0, 50));
+      
+      if (title) {
+        return {
+          title: title.substring(0, 255),
+          price,
+          domain,
+          image_url: imageUrl,
+          original_url: url,
+          description: ($('meta[property="og:description"]').attr('content') || '').substring(0, 500),
+          source: 'scraperapi'
+        };
+      }
     }
     
-    console.log('LinkPreview returned no title, data was:', response.data);
+    console.log('ScraperAPI returned no usable data');
     return null;
   } catch (err) {
-    console.error('LinkPreview fallback failed:', err.message);
+    console.error('ScraperAPI fallback failed:', err.message);
     if (err.response) {
-      console.error('LinkPreview error response:', err.response.status, err.response.data);
+      console.error('ScraperAPI error response:', err.response.status);
     }
     return null;
   }
@@ -102,11 +180,11 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // If direct fetch failed, try LinkPreview.net as fallback
+    // If direct fetch failed, try ScraperAPI as fallback
     if (!response || response.status !== 200) {
-      const linkPreviewData = await tryLinkPreview(url);
-      if (linkPreviewData) {
-        return res.json(linkPreviewData);
+      const scraperData = await tryScraperAPI(url);
+      if (scraperData) {
+        return res.json(scraperData);
       }
       throw new Error('Failed to fetch page');
     }
